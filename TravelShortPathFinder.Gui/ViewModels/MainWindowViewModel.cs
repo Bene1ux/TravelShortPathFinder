@@ -57,7 +57,10 @@
 
         private void Explore()
         {
-            var navCase = InputNavCases.Case2;
+            //var navCase = InputNavCases.Case2;
+            var bitmap = new Bitmap(Bitmap.FromFile(@"C:\path\img.bmp"));
+            var start = FindStartPoint(bitmap);
+            var navCase = new InputNavCase(bitmap, start, new Settings(localSelectNearNodeRange: 18, segmentationSquareSize: 62, segmentationMinSegmentSize: 700, playerVisibilityRadius: 150, fastSegmentationThroughOnePoint: false));
             _settings = navCase.Settings;
 
             _imageSessionFolder = Path.GetFileNameWithoutExtension(Path.GetTempFileName());
@@ -114,6 +117,24 @@
                 Thread.Sleep(DELAY);
                 RepaintBitmap(path, curPlayerNode, false);
             } while (_explorer.HasLocation);
+        }
+
+        private Point FindStartPoint(Bitmap bitmap)
+        {
+
+            for (int x = 0; x < bitmap.Width; x++)
+            {
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    var c = bitmap.GetPixel(x, y);
+                    if (c.R == 150)
+                    {
+                        return new Point(x, y);
+                    }
+
+                }
+            }
+            return Point.Empty;
         }
 
         private unsafe void RepaintBitmap(List<Node> navPath, Node playerNode, bool drawNodesSeparateColor)
